@@ -1,0 +1,14 @@
+---
+- name: Edit luns
+  netapp.ontap.na_ontap_lun:
+    state: "{{ state }}"
+    name: "{{ item.name }}"
+    flexvol_name: "{{ item.volume }}"
+    vserver: "{{ item.vserver }}"
+    size: "{{ item.size }}"
+    size_unit: "{{ item.size_unit }}"
+    ostype: "{{ item.ostype }}"
+    hostname: "{{ item.ntap_hostname }}"
+    username: "{{ item.ntap_username }}"
+    password: "{{ item.ntap_password }}"
+  connection: local

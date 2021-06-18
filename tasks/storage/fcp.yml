@@ -1,0 +1,10 @@
+---
+- name: create FCP
+  netapp.ontap.na_ontap_fcp:
+    state: "{{ state }}"
+    status: up
+    vserver: "{{ item.name }}"
+    hostname: "{{ item.ntap_hostname }}"
+    username: "{{ item.ntap_username }}"
+    password: "{{ item.ntap_password }}"
+  connection: local

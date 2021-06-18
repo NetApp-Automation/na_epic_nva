@@ -1,0 +1,19 @@
+[global]
+name=fio-epic-test
+filename=/dev/epic_1_vserver_1_namespace_1:/dev/epic_1_vserver_1_namespace_2:/dev/epic_1_vserver_1_namespace_3:/dev/epic_1_vserver_1_namespace_4:/dev/epic_1_vserver_1_namespace_5:/dev/epic_1_vserver_1_namespace_6:/dev/epic_1_vserver_1_namespace_7:/dev/epic_1_vserver_1_namespace_8:/dev/epic_1_vserver_2_namespace_1:/dev/epic_1_vserver_2_namespace_2:/dev/epic_1_vserver_2_namespace_3:/dev/epic_1_vserver_2_namespace_4:/dev/epic_1_vserver_2_namespace_5:/dev/epic_1_vserver_2_namespace_6:/dev/epic_1_vserver_2_namespace_7:/dev/epic_1_vserver_2_namespace_8:/dev/epic_1_vserver_3_namespace_1:/dev/epic_1_vserver_3_namespace_2:/dev/epic_1_vserver_3_namespace_3:/dev/epic_1_vserver_3_namespace_4:/dev/epic_1_vserver_3_namespace_5:/dev/epic_1_vserver_3_namespace_6:/dev/epic_1_vserver_3_namespace_7:/dev/epic_1_vserver_3_namespace_8:/dev/epic_1_vserver_4_namespace_1:/dev/epic_1_vserver_4_namespace_2:/dev/epic_1_vserver_4_namespace_3:/dev/epic_1_vserver_4_namespace_4:/dev/epic_1_vserver_4_namespace_5:/dev/epic_1_vserver_4_namespace_6:/dev/epic_1_vserver_4_namespace_7:/dev/epic_1_vserver_4_namespace_8:/dev/epic_2_vserver_1_namespace_1:/dev/epic_2_vserver_1_namespace_2:/dev/epic_2_vserver_1_namespace_3:/dev/epic_2_vserver_1_namespace_4:/dev/epic_2_vserver_1_namespace_5:/dev/epic_2_vserver_1_namespace_6:/dev/epic_2_vserver_1_namespace_7:/dev/epic_2_vserver_1_namespace_8:/dev/epic_2_vserver_2_namespace_1:/dev/epic_2_vserver_2_namespace_2:/dev/epic_2_vserver_2_namespace_3:/dev/epic_2_vserver_2_namespace_4:/dev/epic_2_vserver_2_namespace_5:/dev/epic_2_vserver_2_namespace_6:/dev/epic_2_vserver_2_namespace_7:/dev/epic_2_vserver_2_namespace_8:/dev/epic_2_vserver_3_namespace_1:/dev/epic_2_vserver_3_namespace_2:/dev/epic_2_vserver_3_namespace_3:/dev/epic_2_vserver_3_namespace_4:/dev/epic_2_vserver_3_namespace_5:/dev/epic_2_vserver_3_namespace_6:/dev/epic_2_vserver_3_namespace_7:/dev/epic_2_vserver_3_namespace_8:/dev/epic_2_vserver_4_namespace_1:/dev/epic_2_vserver_4_namespace_2:/dev/epic_2_vserver_4_namespace_3:/dev/epic_2_vserver_4_namespace_4:/dev/epic_2_vserver_4_namespace_5:/dev/epic_2_vserver_4_namespace_6:/dev/epic_2_vserver_4_namespace_7:/dev/epic_2_vserver_4_namespace_8
+ioengine=libaio
+direct=1
+numjobs=4
+#nrfiles=4
+runtime=900
+group_reporting
+time_based
+stonewall
+bs=8K
+rw=randrw  
+rwmixread=75 
+iodepth=40    
+size=1024G  
+ramp_time=10 #warm up
+
+[epic]

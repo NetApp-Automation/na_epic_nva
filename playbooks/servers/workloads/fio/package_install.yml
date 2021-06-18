@@ -1,0 +1,10 @@
+---
+- name: NVME
+  hosts: servers
+  gather_facts: no
+  tasks:
+    - name: install fio
+      yum:
+        name: "{{ item }}"
+        state: latest
+      loop: [fio, ksh]

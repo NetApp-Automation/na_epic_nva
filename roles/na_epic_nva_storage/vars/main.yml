@@ -1,0 +1,4 @@
+---
+# vars file for na_epic_nva_storage
+# most vars are set in defaults
+protocol_options: [nvme, fcp]

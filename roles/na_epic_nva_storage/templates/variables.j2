@@ -1,0 +1,107 @@
+vservers: 
+{# Loops to create the vserver variables #}
+{% for i in range(1,vserver_count + 1) %}
+- name: epic_{{ storage_num }}_vserver_{{ i }}
+  allowed_protocols: {{ protocol }}
+  ipspace: {{ vserver_ipspace }}
+  security_style: {{ vserver_security_style }}
+  snap_policy: {{ vserver_snap_policy }}
+  aggr_list: {{ aggregate_list }}
+  {% if i < ((vserver_count + 1)/2) %}
+  root_volume_aggr: {{ aggregate_list[0] }}
+  {% else %}
+  root_volume_aggr: {{ aggregate_list[1] }}
+  {% endif %}
+  ntap_hostname: {{ inventory_hostname }}
+  ntap_username: {{ ntap_username }}
+  ntap_password: {{ ntap_password }}
+{% endfor %}
+
+volumes:
+{# Loops over the vservers #}
+{% for i in range(1, vserver_count + 1) %}
+  {# Loops to create a set number of volumes per vserver #}
+  {% for j in range(1, volume_count_per_vserver + 1) %}
+- name: epic_{{ storage_num }}_vserver_{{ i }}_db_{{ j }}
+  size: {{ volume_size }}
+  size_unit: "{{ volume_size_unit }}"
+  vserver: epic_{{ storage_num }}_vserver_{{ i }}
+    {# Decides what aggregate should be used for the volume #}
+    {% if i < ((vserver_count + 1)/2) %}
+  aggr_name: {{ aggregate_list[0] }}
+    {% else %}
+  aggr_name: {{ aggregate_list[1] }}
+    {% endif %}
+  percent_snapshot_space: '0'
+  policy: {{ volume_policy }}
+  snapshot_policy: {{ volume_snapshot_policy }}
+  space_guarantee: {{ volume_space_guarantee }}
+  ntap_hostname: {{ inventory_hostname }}
+  ntap_username: {{ ntap_username }}
+  ntap_password: {{ ntap_password }}
+  {% endfor %}
+{% endfor %}
+
+{% if protocol == 'nvme' %}
+  {% include 'nvme.j2' %}
+{% endif %}
+
+{% if protocol == 'fcp' or protocol == 'iscsi' %}
+  {% include 'fc_iscsi.j2' %}
+{% endif %}
+
+lifs:
+{# This sets alternate active LIFs between vServers 
+   to get around the limit on # of NVMe LIFs per vserver
+   while still using all available LIFs #}
+{# Loops over the vservers #}
+{% for i in range(1,vserver_count + 1) %}
+  {% set current_cycle = loop.cycle('even','odd') %}
+  {# Loops to create a set number of lifs per vserver #}
+  {% for j in range(port_letters|length) %}
+    {# cycles through creating a/b as remote and c/d as remote lifs #}
+    {% if current_cycle == 'odd' %}
+      {% set first_two_remote = true %}
+    {% else %}
+      {% set first_two_remote = false %}
+    {% endif %}
+    {# Checks to see if you are in the first half of the ports #}
+    {% if j < ((port_letters|length)/2) %}
+      {% set first_half = true %}
+    {% else %}
+      {% set first_half = false %}
+    {% endif %}
+    {# Checks to see if a lif should be remote. If we are in the first half of the ports (a/b) and we want the first half
+    to be remote then we set the port to be remote. If we are in the second half of the ports (c/d) and we want the second
+    half to be remote then we set the port to be remote. #}
+    {% if first_two_remote and first_half or not first_two_remote and not first_half %}
+      {% set remote = true %}
+    {% else %}
+      {% set remote = false %}
+    {% endif %}
+    {# if the lif is remote we need to name it properly and switch the home node to be opposite of the vserver its on #}
+    {% if remote %}
+- name: epic_{{ storage_num }}_vserver_{{ i }}_lif_{{ port_num }}{{ port_letters[j] }}_r
+      {% if i < ((vserver_count + 1)/2) %}
+  home_node: {{ node_list[1] }}
+      {% else %}
+  home_node: {{ node_list[0] }}
+      {% endif %}
+  home_port: {{ port_num }}{{ port_letters[j] }}
+    {% else %}
+- name: epic_{{ storage_num }}_vserver_{{ i }}_lif_{{ port_num }}{{ port_letters[j] }}
+      {% if i < ((vserver_count + 1)/2) %}
+  home_node: {{ node_list[0] }}
+      {% else %}
+  home_node: {{ node_list[1] }}
+      {% endif %}
+  home_port: {{ port_num }}{{ port_letters[j] }}
+    {% endif %}
+  protocols: {{ ansible_protocol_options[protocol] }}
+  role: data
+  vserver: epic_{{ storage_num }}_vserver_{{ i }}
+  ntap_hostname: {{ inventory_hostname }}
+  ntap_username: {{ ntap_username }}
+  ntap_password: {{ ntap_password }}
+  {% endfor %}
+{% endfor %}

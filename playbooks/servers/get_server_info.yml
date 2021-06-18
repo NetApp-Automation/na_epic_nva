@@ -1,0 +1,39 @@
+---
+- name: get facts
+  hosts: servers
+  gather_facts: yes
+  tasks:
+    - name: Setting up wwn list
+      set_fact:
+        wwns: []
+    - name: Edit wwns
+      set_fact:
+        wwns: "{{ wwns + [ item[:2] + ':' + item[2:4] + ':' + item[4:6] + ':' + item[6:8] + ':' + item[8:10] + ':' + item[10:12] + ':' + item[12:14] + ':' + item[14:16] ] }}"
+      loop: "{{ ansible_facts.fibre_channel_wwn }}"
+    - name: Print wwns
+      ansible.builtin.debug:
+        var: wwns
+- name: bring ids together
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Setting up WWN list
+      set_fact:
+        wwns: []
+    - name: Merge WWN list
+      set_fact:
+        wwns: "{{ wwns + hostvars[item]['wwns'] }}"
+      loop: "{{ groups['servers'] }}"
+    - name: Print WWNs
+      ansible.builtin.debug:
+        var: wwns
+    - name: Setting up nvme UUID list
+      set_fact:
+        nvme_uuids: []
+    - name: Merge nvme UUID list
+      set_fact:
+        nvme_uuids: "{{ nvme_uuids +  [ hostvars[item]['ansible_facts']['hostnqn'] ] }}"
+      loop: "{{ groups['servers'] }}"
+    - name: Print WWNs
+      ansible.builtin.debug:
+        var: nvme_uuids

@@ -1,0 +1,12 @@
+---
+- hosts: storage
+  vars:
+    state: present
+    protocol: nvme
+    host_nqns:
+      - "nqn.2014-08.1"
+      - "nqn.2014-08.2"
+      - "nqn.2014-08.3"
+      - "nqn.2014-08.4"
+  roles:
+    - na_epic_nva_storage

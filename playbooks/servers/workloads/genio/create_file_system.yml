@@ -1,0 +1,55 @@
+---
+- name: Init device list for this host
+  set_fact:
+    device_list: []
+- name: Create device list for this host
+  set_fact:
+    device_list: "{{ device_list + [ folder + '/epic_' + item[0] + '_vserver_' + item[1] + '_' + lun_or_namespace + '_' + item[2] ] }}"
+  with_nested:
+    - "{{ lv_item.current_storage_num }}"
+    - ["1", "2", "3", "4"]
+    - "{{ lv_item.pv_nums }}"
+  when: storage_setting == 'single_storage'
+- name: Create device list for this host
+  set_fact:
+    device_list: "{{ device_list + [ folder + '/epic_' + item[0] + '_vserver_' + item[1] + '_' + lun_or_namespace + '_' + item[2] ] }}"
+  with_nested:
+    - "{{ lv_item.current_storage_num }}"
+    - ["1", "2", "3", "4"]
+    - "{{ pv_nums }}"
+  when: storage_setting == 'multi_storage'
+- name: output device lists
+  debug:
+    var: device_list
+- meta: end_play
+  when: not device_list | length > 0
+- name: Create a volume group
+  community.general.lvg:
+    vg: "{{ lv_item.name }}vg{{ system_num }}"
+    pvs: "{{ device_list }}"
+    pesize: "{{ lv_item.stripe_size }}M"
+- name: Create a logical volume
+  community.general.lvol:
+    vg: "{{ lv_item.name }}vg{{ system_num }}"
+    lv: "{{ lv_item.name }}{{ system_num }}"
+    opts: "-i {{ lv_item.stripe_num }} -I {{ lv_item.stripe_size }}{{ lv_item.stripe_size_unit }}"
+    size: 100%FREE
+    shrink: no
+- name: Create a filesystem
+  community.general.filesystem:
+    fstype: xfs
+    dev: /dev/{{ lv_item.name }}vg{{ system_num }}/{{ lv_item.name }}{{ system_num }}
+- name: Create a directory
+  file:
+    path: "/{{ lv_item.name }}{{ system_num }}"
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+- name: mount
+  mount:
+    state: mounted
+    path: "/{{ lv_item.name }}{{ system_num }}"
+    fstype: xfs
+    src: "/dev/mapper/{{ lv_item.name }}vg{{ system_num }}-{{ lv_item.name }}{{ system_num }}"
+    fstab: /tmp/tmp.fstab

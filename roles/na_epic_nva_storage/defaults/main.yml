@@ -1,0 +1,42 @@
+---
+# defaults file for na_epic_nva_storage
+lifs_per_vserver: 4
+
+# the length of this array should be a multiple of 4
+# or it could break some logic
+port_letters: ["a", "b", "c", "d"]
+
+# vserver settings, described in README
+vserver_count: 4
+vserver_ipspace: Default
+vserver_security_style: unix
+vserver_snap_policy: none
+
+# volume settings, described in README
+volume_count_per_vserver: 8
+volume_size: 1228
+volume_size_unit: "gb"
+volume_policy: default
+volume_snapshot_policy: none
+volume_space_guarantee: none
+
+# namespace settings, described in README
+namespace_count_per_vserver: 8
+namespace_size: 1000000000000
+namespace_block_size: 4096
+namespace_ostype: linux
+namespace_policy: default
+namespace_snapshot_policy: none
+namespace_space_guarantee: none
+
+# lun settings, described in README
+lun_count_per_vserver: 8
+lun_size: 1000
+lun_size_unit: "gb"
+lun_ostype: linux
+
+# Used to translate protocols into different required options by ontap
+ansible_protocol_options:
+  nvme: fc-nvme
+  iscsi: iscsi
+  fcp: fcp

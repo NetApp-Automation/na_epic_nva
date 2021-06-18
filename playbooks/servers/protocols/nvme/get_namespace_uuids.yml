@@ -1,0 +1,22 @@
+---
+- name: Getting UUIDs
+  hosts: storage
+  gather_facts: no
+  tasks:
+    - name: Setting up nvme uuid list
+      set_fact:
+        uuids: []
+    - name: Get nvme info
+      netapp.ontap.na_ontap_info:
+        hostname: "{{ item.ntap_hostname }}"
+        username: "{{ item.ntap_username }}"
+        password: "{{ item.ntap_password }}"
+        gather_subset: "nvme_namespace_info"
+      register: ontap_info
+    - name: Add uuids to list
+      set_fact:
+        uuids: "{{ uuids + [ (item.key,item.value.uuid ) ] }}"
+      loop: "{{ ontap_info.ontap_info.nvme_namespace_info | dict2items }}"
+    - name: output uuids
+      debug:
+        var: uuids

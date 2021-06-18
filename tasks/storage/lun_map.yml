@@ -1,0 +1,11 @@
+---
+- name: Create LUN mapping
+  na_ontap_lun_map:
+    state: "{{ state }}"
+    initiator_group_name: "{{ item.igroup }}"
+    path: "{{ item.path }}"
+    vserver: "{{ item.vserver }}"
+    hostname: "{{ item.ntap_hostname }}"
+    username: "{{ item.ntap_username }}"
+    password: "{{ item.ntap_password }}"
+  connection: local

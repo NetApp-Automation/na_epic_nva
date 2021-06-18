@@ -1,0 +1,10 @@
+---
+- name: Edit NVMe process
+  netapp.ontap.na_ontap_nvme:
+    state: "{{ state }}"
+    status_admin: True
+    vserver: "{{ item.name }}"
+    hostname: "{{ item.ntap_hostname }}"
+    username: "{{ item.ntap_username }}"
+    password: "{{ item.ntap_password }}"
+  connection: local

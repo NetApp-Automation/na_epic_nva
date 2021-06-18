@@ -1,0 +1,25 @@
+---
+- import_playbook: get_namespace_uuids.yml
+- name: Merging UUID lists
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Create uuid list
+      template:
+        src: ./uuid.j2
+        dest: ./vars/uuids.rules
+        lstrip_blocks: yes
+- name: Adding udev rules to servers
+  hosts: servers
+  gather_facts: no
+  tasks:
+    - name: Add udev rules to file
+      copy:
+        src: ./vars/uuids.rules
+        dest: /etc/udev/rules.d/81-nvme.rules
+    - name: Reload udev rules
+      shell:
+        cmd: udevadm control --reload-rules
+    - name: udev trigger
+      shell:
+        cmd: udevadm trigger

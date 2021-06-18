@@ -1,0 +1,28 @@
+---
+- name: Setup the Logical Volumes
+  hosts: genio_servers
+  gather_facts: no
+  vars:
+    protocol: nvme
+    lun_or_namespace: namespace
+    folder: /dev
+    storage_setting: multi_storage
+    lv_list:
+      - name: prod
+        stripe_size: 8 
+        stripe_size_unit: K
+        stripe_num: 8
+        current_storage_num: 1
+        pv_nums: ["1", "2", "3", "4"]
+      - name: jrn
+        stripe_size: 256
+        stripe_size_unit: K
+        stripe_num: 8
+        current_storage_num: 2
+        pv_nums: ["5", "6", "7", "8"]
+
+  tasks:
+    - include_tasks: create_file_system.yml
+      loop: "{{ lv_list }}"
+      loop_control:
+        loop_var: lv_item

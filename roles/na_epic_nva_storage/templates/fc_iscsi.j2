@@ -1,0 +1,38 @@
+luns:
+{% for i in range(1, vserver_count + 1) %}
+  {% for j in range(1, lun_count_per_vserver + 1) %}
+- name: epic_{{ storage_num }}_vserver_{{ i }}_lun_{{ j }}
+  volume: epic_{{ storage_num }}_vserver_{{ i }}_db_{{ j }}
+  vserver: epic_{{ storage_num }}_vserver_{{ i }}
+  size: {{ lun_size }}
+  size_unit: {{ lun_size_unit }}
+  ostype: {{ lun_ostype }}
+  ntap_hostname: {{ inventory_hostname }}
+  ntap_username: {{ ntap_username }}
+  ntap_password: {{ ntap_password }}
+  {% endfor %}
+{% endfor %}
+
+igroups:
+{% for i in range(1, vserver_count + 1) %}
+- name: epic_{{ storage_num }}_igroup_{{ i }}
+  igroup_type: {{ protocol }}
+  ostype: {{ lun_ostype }}
+  initiators: {{ initiators }}
+  vserver: epic_{{ storage_num }}_vserver_{{ i }}
+  ntap_hostname: {{ inventory_hostname }}
+  ntap_username: {{ ntap_username }}
+  ntap_password: {{ ntap_password }}
+{% endfor %}
+
+lun_maps:
+{% for i in range(1, vserver_count + 1) %}
+  {% for j in range(1, lun_count_per_vserver + 1) %}
+- igroup: epic_{{ storage_num }}_igroup_{{ i }}
+  path: /vol/epic_{{ storage_num }}_vserver_{{ i }}_db_{{ j }}/epic_{{ storage_num }}_vserver_{{ i }}_lun_{{ j }}
+  vserver: epic_{{ storage_num }}_vserver_{{ i }}
+  ntap_hostname: {{ inventory_hostname }}
+  ntap_username: {{ ntap_username }}
+  ntap_password: {{ ntap_password }}
+  {% endfor %}
+{% endfor %}

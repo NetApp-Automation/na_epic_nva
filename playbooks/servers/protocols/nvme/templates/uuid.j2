@@ -1,0 +1,8 @@
+{% for i in groups['storage'] %}
+{% for j in hostvars[i]['uuids'] %}
+{% if 'epic' in j[0] %}
+{% set name = j[0][j[0].rfind('/')+1:] %}
+KERNEL=="nvme[0-9]*n[0-9]*", ENV{DEVTYPE}=="disk", ENV{ID_WWN}=="uuid.{{ j[1] }}", SYMLINK+="{{ name }}"
+{% endif %}
+{% endfor %}
+{% endfor %}

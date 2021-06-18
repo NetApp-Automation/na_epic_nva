@@ -1,0 +1,20 @@
+[global]
+name=fio-epic-test
+filename={% for i in range(1,3) %}{% for j in range(1,5) %}{% for k in range(1,9) %}{{ device_dir }}epic_{{ i }}_vserver_{{ j }}_namespace_{{ k }}{% if not (i==2 and j==4 and k==8)  %}:{% endif %}{% endfor %}{% endfor %}{% endfor %}
+
+ioengine=libaio
+direct=1
+numjobs=4
+#nrfiles=4
+runtime={{ seconds }}
+group_reporting
+time_based
+stonewall
+bs=8K
+rw=randrw    #choose rw if sequential, randrw for random
+rwmixread=75 #modifies io distribution
+iodepth={{ iodepth }}    #modify to get io they want (latency * target op count)
+size=1024G    #aggregate file size per job
+ramp_time=10 #warm up
+
+[epic]

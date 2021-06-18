@@ -1,0 +1,19 @@
+---
+- name: Setting up tests
+  hosts: fio_servers
+  gather_facts: no
+  vars:
+    iodepth: 50
+    seconds: 60
+    protocol: nvme
+    device_dir: /dev/
+  tasks:
+    - name: Create fio directory
+      file:
+        path: ~/fio
+        state: directory
+    - name: Template a file to vars folder
+      template:
+        src: ./epic_cfg.j2
+        dest: ~/fio/epic_fio_cfg.fio
+        lstrip_blocks: yes

@@ -1,0 +1,15 @@
+---
+- name: Edit volumes
+  netapp.ontap.na_ontap_volume:
+    state: "{{ state }}"
+    name: "{{ item.name }}"
+    aggregate_name: "{{ item.aggr_name }}"
+    size: "{{ item.size }}"
+    size_unit: "{{ item.size_unit }}"
+    vserver: "{{ item.vserver }}"
+    snapshot_policy: none
+    wait_for_completion: True
+    hostname: "{{ item.ntap_hostname }}"
+    username: "{{ item.ntap_username }}"
+    password: "{{ item.ntap_password }}"
+  connection: local

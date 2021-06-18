@@ -1,0 +1,15 @@
+---
+- name: Edit LIFs
+  netapp.ontap.na_ontap_interface:
+    state: "{{ state }}"
+    interface_name: "{{ item.name }}"
+    vserver: "{{ item.vserver }}"
+    protocols: "{{ item.protocols }}"
+    home_node: "{{ item.home_node }}"
+    home_port: "{{ item.home_port }}"
+    role: "{{ item.role }}"
+    hostname: "{{ item.ntap_hostname }}"
+    username: "{{ item.ntap_username }}"
+    password: "{{ item.ntap_password }}"
+    admin_status: up
+  connection: local

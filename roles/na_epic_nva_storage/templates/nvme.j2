@@ -1,0 +1,30 @@
+namespaces:
+{% for i in range(1, vserver_count + 1) %}
+  {% set vserver_namespace_paths = [] %}
+  {% for j in range(1, namespace_count_per_vserver + 1) %}
+- name: epic_{{ storage_num }}_vserver_{{ i }}_namespace_{{ j }}
+  vserver: epic_{{ storage_num }}_vserver_{{ i }}
+  block_size: {{ namespace_block_size }}
+  size: {{ namespace_size }}
+  ostype: {{ namespace_ostype }}
+  path: /vol/epic_{{ storage_num }}_vserver_{{ i }}_db_{{ j }}/epic_{{ storage_num }}_vserver_{{ i }}_namespace_{{ j }}
+  ntap_hostname: {{ inventory_hostname }}
+  ntap_username: {{ ntap_username }}
+  ntap_password: {{ ntap_password }}
+  {% endfor %}
+{% endfor %}
+
+subsystems:
+{% for i in range(1, vserver_count + 1) %}
+- name: epic_{{ storage_num }}_subsystem_{{ i }}
+  {# Need to add a way to get host NQNs #}
+  namespace_paths:
+  {% for j in range(1, namespace_count_per_vserver + 1) %}
+  - /vol/epic_{{ storage_num }}_vserver_{{ i }}_db_{{ j }}/epic_{{ storage_num }}_vserver_{{ i }}_namespace_{{ j }}
+  {% endfor %}
+  ostype: {{ namespace_ostype }}
+  vserver: epic_{{ storage_num }}_vserver_{{ i }}
+  ntap_hostname: {{ inventory_hostname }}
+  ntap_username: {{ ntap_username }}
+  ntap_password: {{ ntap_password }}
+{% endfor %}

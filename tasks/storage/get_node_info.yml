@@ -1,0 +1,15 @@
+---
+- name: Get node info
+  netapp.ontap.na_ontap_info: 
+    state: info
+    hostname: "{{ item.ntap_hostname }}"
+    username: "{{ item.ntap_username }}"
+    password: "{{ item.ntap_password }}"
+    gather_subset: "cluster_node_info"
+  register: ontap_info
+- name: Node info
+  set_fact:
+    node_list: "{{ ontap_info.ontap_info.cluster_node_info.keys() | list | sort }}"
+- name: Output node info
+  debug:
+    var: node_list

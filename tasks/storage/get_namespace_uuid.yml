@@ -1,0 +1,17 @@
+---
+- name: Setting up nvme uuid list
+  set_fact:
+    uuids: []
+- name: Create fio directory
+  netapp.ontap.na_ontap_info:
+    hostname: "{{ item.ntap_hostname }}"
+    username: "{{ item.ntap_username }}"
+    password: "{{ item.ntap_password }}"
+    gather_subset: "nvme_namespace_info"
+- name: Get aggregates
+  set_fact:
+    uuids: "{{ uuids + [ {'item.key':'item.value.uuid' } ] }}"
+  loop: "{{ ontap_info.ontap_info.nvme_namespace_info | dict2items }}"
+- name: output more info
+  debug:
+    var: uuids

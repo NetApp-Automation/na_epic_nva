@@ -1,0 +1,74 @@
+---
+- name: Gets the node info from the storage
+  import_tasks: ../../tasks/storage/get_node_info.yml
+  tags: [nvme, fcp, iscsi]
+- name: Gets the aggregate info from the storage
+  import_tasks: ../../tasks/storage/get_aggr_info.yml
+  tags: [nvme, fcp, iscsi]
+- name: Create a variable file based on options passed in
+  template:
+    src: ./variables.j2
+    dest: "./vars/{{ inventory_hostname }}.yml"
+    lstrip_blocks: yes
+  tags: [nvme, fcp, iscsi]
+- name: Load variables from the new vars file
+  include_vars:
+    file: "./vars/{{ inventory_hostname }}.yml"
+  tags: [nvme, fcp, iscsi]
+- name: Create vservers
+  include_tasks: ../../tasks/storage/vserver.yml
+  loop: "{{ vservers }}"
+  tags: [nvme, fcp, iscsi]
+
+# NVME
+- name: Activate nvme
+  include_tasks: ../../tasks/storage/nvme.yml
+  loop: "{{ vservers }}"
+  when: protocol == "nvme" and state == "present"
+  tags: [nvme]
+
+# FCP
+- name: Activate fcp
+  include_tasks: ../../tasks/storage/fcp.yml
+  loop: "{{ vservers }}"
+  when: protocol == "fcp" and state == "present"
+  tags: [fcp]
+
+# General
+- name: Create volumes
+  include_tasks: ../../tasks/storage/volume.yml
+  loop: "{{ volumes }}"
+  tags: [nvme, fcp, iscsi]
+- name: Create lifs
+  include_tasks: ../../tasks/storage/lif.yml
+  loop: "{{ lifs }}"
+  tags: [nvme, fcp, iscsi]
+
+# FCP and iSCSI
+- name: Create LUNs
+  include_tasks: ../../tasks/storage/lun.yml
+  loop: "{{ luns }}"
+  when: protocol == "fcp" or protocol == "iscsi"
+  tags: [fcp, iscsi]
+- name: Create igroups
+  include_tasks: ../../tasks/storage/igroup.yml
+  loop: "{{ igroups }}"
+  when: protocol == "fcp" or protocol == "iscsi"
+  tags: [fcp, iscsi]
+- name: Map LUNs
+  include_tasks: ../../tasks/storage/lun_map.yml
+  loop: "{{ lun_maps }}"
+  when: protocol == "fcp" or protocol == "iscsi"
+  tags: [fcp, iscsi]
+
+# NVME
+- name: Create namespaces
+  include_tasks: ../../tasks/storage/namespace.yml
+  loop: "{{ namespaces }}"
+  when: protocol == "nvme"
+  tags: [nvme]
+- name: Create subsystems
+  include_tasks: ../../tasks/storage/subsystem.yml
+  loop: "{{ subsystems }}"
+  when: protocol == "nvme"
+  tags: [nvme]
