@@ -2,9 +2,9 @@
 - name: Get node info
   netapp.ontap.na_ontap_info: 
     state: info
-    hostname: "{{ item.ntap_hostname }}"
-    username: "{{ item.ntap_username }}"
-    password: "{{ item.ntap_password }}"
+    hostname: "{{ inventory_hostname }}"
+    username: "{{ ntap_username }}"
+    password: "{{ ntap_password }}"
     gather_subset: "cluster_node_info"
   register: ontap_info
 - name: Node info

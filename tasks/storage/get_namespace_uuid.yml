@@ -4,9 +4,9 @@
     uuids: []
 - name: Create fio directory
   netapp.ontap.na_ontap_info:
-    hostname: "{{ item.ntap_hostname }}"
-    username: "{{ item.ntap_username }}"
-    password: "{{ item.ntap_password }}"
+    hostname: "{{ inventory_hostname }}"
+    username: "{{ ntap_username }}"
+    password: "{{ ntap_password }}"
     gather_subset: "nvme_namespace_info"
 - name: Get aggregates
   set_fact:
